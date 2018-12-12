@@ -2,6 +2,8 @@ package org.ticket.ticket.utils.http;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -150,6 +152,125 @@ public class ComBoTextField {
 		jTextField.add(cbInput, BorderLayout.SOUTH);
 	}
 
+	/**
+	 * 出发地、目的地输入框
+	 *
+	 * 2018-12-11 16:31:45
+	 * @param txtInput
+	 * @param lists
+	 * @param map void
+	 */
+	public static void setUpAutoComplete(final JTextField txtInput, final List<String> lists,
+			final Map<String, String[]> map) {
+		final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+		final JComboBox<String> cb = new JComboBox<String>() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(super.getPreferredSize().width, 0);
+			}
+		};
+		setAdjusting(cb, false);
+		for (String string : lists) {
+			model.addElement(string);
+		}
+		cb.setSelectedItem(null);
+		
+		cb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!isAdjusting(cb)) {
+					if (cb.getSelectedItem() != null) {
+						txtInput.setText(cb.getSelectedItem().toString());
+					}
+				}
+			}
+		});
+		
+		txtInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				setAdjusting(cb, true);
+				// 空格键
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					if (cb.isPopupVisible()) {
+						e.setKeyCode(KeyEvent.VK_ENTER);
+					}
+				}
+				
+				// Enter,Up,Down
+				int keyCode = e.getKeyCode();
+				if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_UP
+						|| keyCode == KeyEvent.VK_DOWN) {
+					 e.setSource(cb);
+					 cb.dispatchEvent(e);
+					 
+					 // Enter
+					if (keyCode == KeyEvent.VK_ENTER) {
+						if (cb.getSelectedItem() != null) {
+							txtInput.setText(cb.getSelectedItem().toString());
+						}
+						cb.setPopupVisible(false);
+					}
+				}
+				
+				// Esc
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					cb.setPopupVisible(false);
+				}
+				
+				setAdjusting(cb, false);
+			}
+		});
+		
+		txtInput.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateDocument();
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				updateDocument();
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				updateDocument();
+			}
+			
+			/**
+			 * 修改文档
+			 *
+			 * 2018-12-11 17:28:42 void
+			 */
+			private void updateDocument() {
+				setAdjusting(cb, true);
+				model.removeAllElements();
+				String text = txtInput.getText();
+				if (text != null && !text.isEmpty()) {
+					for (String key : map.keySet()) {
+						String[] strs = map.get(key);
+						String lowerCase = text.toLowerCase();
+						if (key.startsWith(lowerCase)) {
+							model.addElement(key);
+						} else {
+							if (strs.length > 4 && strs[4].toLowerCase().startsWith(lowerCase)) {
+								model.addElement(key);
+							}
+						}
+					}
+				}
+				cb.setPopupVisible(model.getSize() > 0);
+				setAdjusting(cb, false);
+			}
+		});
+		txtInput.setLayout(new BorderLayout());
+		txtInput.add(cb, BorderLayout.SOUTH);
+	}
+	
 	/**
 	 * 是否可以调整
 	 *
