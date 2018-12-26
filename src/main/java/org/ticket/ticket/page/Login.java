@@ -21,6 +21,7 @@ import javax.swing.UIManager;
 
 import org.ticket.ticket.config.ConfigUtils;
 import org.ticket.ticket.page.method.LoginMethods;
+import org.ticket.ticket.utils.XConstant;
 import org.ticket.ticket.utils.http.ComBoTextField;
 import org.ticket.ticket.utils.http.XBrowser;
 
@@ -102,7 +103,7 @@ public class Login {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					ImageIcon imageIcon = new ImageIcon(Login.class.getResource("../resources/image/12306.jpg"));
+					ImageIcon imageIcon = new ImageIcon(XConstant.Jpg.JPG_12306_URL);
 					final JLabel jLabel = new JLabel(imageIcon);
 					jLabel.addMouseListener(new MouseAdapter() {
 						public void mouseClicked(MouseEvent e) {
