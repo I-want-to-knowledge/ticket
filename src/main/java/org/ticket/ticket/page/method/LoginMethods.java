@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ticket.ticket.config.ConfigUtils;
 import org.ticket.ticket.page.Login;
+import org.ticket.ticket.page.MyHomePage;
+import org.ticket.ticket.utils.XConstant;
 import org.ticket.ticket.utils.http.XBrowser;
 import org.ticket.ticket.utils.http.XHttpUtils;
 import org.ticket.ticket.utils.http.client.XHttpResponse;
@@ -35,11 +37,6 @@ public class LoginMethods {
 	
 	private Login page;
 	private StringJoiner newVerificationCode = new StringJoiner(",");
-	private final static String LOGIN_INIT = "https://kyfw.12306.cn/otn/login/init";
-	private final static String VERIFICATION_CODE = "https://kyfw.12306.cn/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&";
-	private final String CHECK_RAND_CODE_ANSYN = "https://kyfw.12306.cn/otn/passcodeNew/checkRandCodeAnsyn";
-	private final String LOGIN_AYSN_SUGGEST = "https://kyfw.12306.cn/otn/login/loginAysnSuggest";
-	private final String USER_LOGIN = "https://kyfw.12306.cn/otn/login/userLogin";
 
 	public LoginMethods(Login page) {
 		this.page = page;
@@ -51,7 +48,7 @@ public class LoginMethods {
 	 * 2018-11-26 16:26:43 void
 	 */
 	public static void ticket_init() {
-		XHttpGet httpGet = new XHttpGet(LOGIN_INIT);
+		XHttpGet httpGet = new XHttpGet(XConstant.Url.LOGIN_INIT);
 		XBrowser.execute(httpGet).getEntity().disconnect();
 	}
 
@@ -64,7 +61,7 @@ public class LoginMethods {
 	public static byte[] getVerificationCode() {
 		// https://kyfw.12306.cn/passport/captcha/captcha-image64?login_site=E&module=login&rand=sjrand&1542706422151&callback=jQuery19106652336679869479_1542706407795&_=1542706407797
 		// https://kyfw.12306.cn/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&0.6551712691897946
-		XHttpMethods verificationCode = new XHttpGet(VERIFICATION_CODE + Math.random());
+		XHttpMethods verificationCode = new XHttpGet(XConstant.Url.GET_PASS_CODE_NEW + Math.random());
 		XHttpResponse response = XBrowser.execute(verificationCode);
 		try {
 			return XHttpUtils.inputStreamToByte(response.getBody());
@@ -84,6 +81,8 @@ public class LoginMethods {
 			return;
 		}
 		
+		LOG.info("开始进行登录...");
+		
 		Component[] components = page.frame.getLayeredPane().getComponents();
 		for (int i = 0; i < components.length; i++) {
 			Component component = components[i];
@@ -95,9 +94,11 @@ public class LoginMethods {
 				newVerificationCode.add(y.toString());
 			}
 		}
+		// newVerificationCode.add("");
+		LOG.info("当前的验证码是：" + newVerificationCode.toString());
 		page.hintLabel.setText("当前的验证码是：" + newVerificationCode.toString());
 		
-		XHttpPost post = new XHttpPost(CHECK_RAND_CODE_ANSYN);
+		XHttpPost post = new XHttpPost(XConstant.Url.CHECK_RAND_CODE_ANSYN);
 		XParams params = new XParams();
 		params.put("rand", "sjrand");
 		params.put("randCode", newVerificationCode.toString());
@@ -106,15 +107,20 @@ public class LoginMethods {
 		String body = XHttpUtils.outHtml(resp.getBody());
 		JSONObject jsonBody = JSONObject.parseObject(body);
 		JSONObject jsonData = JSONObject.parseObject(jsonBody.getString("data"));
-		if ("1".equals(jsonData.get(jsonData.getInteger("result")))) {
+		if ("1".equals(jsonData.get("result"))) {
+			LOG.info("验证码验证成功，开始展开购票主页面！");
 			page.hintLabel.setText("验证码正确，开始提交表单！");
 			resp.getEntity().disconnect();
 			login();
 		} else {
+			LOG.warn("验证码错误！");
+			// 打印错误信息
 			page.hintLabel.setText("验证码错误！");
 			page.hintLabel.setForeground(Color.red);
 			resp.getEntity().disconnect();
-			page.hintLabel.setIcon(new ImageIcon(getVerificationCode()));
+			
+			// 从新获取验证码
+			page.imageLabel.setIcon(new ImageIcon(getVerificationCode()));
 			clearCode();
 		}
 	}
@@ -148,7 +154,7 @@ public class LoginMethods {
 	 */
 	private void login() {
 		// 开始提交信息
-		XHttpPost post = new XHttpPost(LOGIN_AYSN_SUGGEST);
+		XHttpPost post = new XHttpPost(XConstant.Url.LOGIN_AYSN_SUGGEST);
 		XParams params = new XParams();
 		params.put("loginUserDTO.user_name", page.jTextField.getText());
 		params.put("randCode", newVerificationCode.toString());
@@ -179,13 +185,15 @@ public class LoginMethods {
 		resp.getEntity().disconnect();
 		
 		// 验证成功后，进行第二次登录
-		post = new XHttpPost(USER_LOGIN);
+		post = new XHttpPost(XConstant.Url.USER_LOGIN);
 		XParams params2 = new XParams();
 		params2.put("_json_att", "");
 		post.setParams(params2);
 		resp = XBrowser.execute(post);
 		if (resp.getEntity().getStatus() == 200) {
-			if (XHttpUtils.outHtml(resp.getBody()).contains("欢迎您登录")) {
+			// String b = XHttpUtils.outHtml(resp.getBody());
+			// LOG.info("登录成功，返回body信息：{}", b);
+			if (XHttpUtils.outHtml(resp.getBody()).contains(">个人中心</a>")) {
 				page.hintLabel.setText("登录成功！");
 
 				// 记住密码
@@ -200,17 +208,19 @@ public class LoginMethods {
 				} catch (Exception e) {
 					LOG.error("记住密码错误：{}", e);
 				}
+				page.frame.dispose();
+
+				// 登录成功后首页
+				MyHomePage mypage = new MyHomePage();
+				mypage.printLog("登录成功，欢迎使用X抢票！");
+				mypage.printLog("双击车次提交订单，右键添加车次进行刷票！");
+				mypage.show(mypage);
+			} else {
+				page.hintLabel.setText("登录失败！");
+				page.hintLabel.setForeground(Color.red);
 			}
-			page.frame.dispose();
-			
-			// 登录成功后首页
-			// TODO:待完善...	HomePage
-			
-		} else {
-			page.hintLabel.setText("登录失败！");
-			page.hintLabel.setForeground(Color.red);
+			resp.getEntity().disconnect();
 		}
-		resp.getEntity().disconnect();
 	}
 
 	/**

@@ -19,6 +19,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.ticket.ticket.config.ConfigUtils;
 import org.ticket.ticket.page.method.LoginMethods;
 import org.ticket.ticket.utils.XConstant;
@@ -33,7 +35,7 @@ import org.ticket.ticket.utils.http.XBrowser;
  * Login
  */
 public class Login {
-	// private Logger LOG = LoggerFactory.getLogger(Login.class);
+	private Logger LOG = LoggerFactory.getLogger(Login.class);
 	
 	public JFrame frame;// 页面
 	public JLabel imageLabel;// 图片标签
@@ -98,11 +100,13 @@ public class Login {
 		// 验证码图片部分
 		final JComponent layeredPane = frame.getLayeredPane();
 		
+		// 验证码图标
 		imageLabel = new JLabel(new ImageIcon(LoginMethods.getVerificationCode()));
 		imageLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
+					LOG.info("图片路径：{}", XConstant.Jpg.JPG_12306_URL);
 					ImageIcon imageIcon = new ImageIcon(XConstant.Jpg.JPG_12306_URL);
 					final JLabel jLabel = new JLabel(imageIcon);
 					jLabel.addMouseListener(new MouseAdapter() {
@@ -184,8 +188,7 @@ public class Login {
 		} catch (Exception e) {
 			hintLabel.setText("记住用户处理错误(" + e.getMessage() + ")");
 			hintLabel.setForeground(Color.red);
-			// LOG.error("记住用户处理错误，错误信息：{}", e);
-			e.printStackTrace();
+			LOG.error("记住用户处理错误，错误信息：{}", e);
 		}
 		for (String key : map.keySet()) {
 			arrayList.add(key);

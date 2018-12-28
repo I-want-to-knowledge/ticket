@@ -1,7 +1,5 @@
 package org.ticket.ticket.utils;
 
-import java.net.URL;
-
 /**
  * 常量
  *
@@ -11,7 +9,7 @@ import java.net.URL;
  */
 public interface XConstant {
 
-	final String UTF_8 = "UTF_8";
+	final String UTF_8 = "UTF-8";
 	
 	final String AUTHOR_EMAIL = "1031881200@qq.com";
 	
@@ -126,6 +124,17 @@ public interface XConstant {
 	 * Url
 	 */
 	interface Url {
+		/** 登录 */
+		final static String LOGIN_INIT = "https://kyfw.12306.cn/otn/login/init";
+		/** 验证码图片 */
+		// final static String CAPTCHA_IMAGE = "https://kyfw.12306.cn/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&";
+		/** 登录界面验证码 */
+		final String GET_PASS_CODE_NEW = "https://kyfw.12306.cn/otn/passcodeNew/getPassCodeNew?module=login&rand=sjrand&";
+		/** 登录信息提交 */
+		final String LOGIN_AYSN_SUGGEST = "https://kyfw.12306.cn/otn/login/loginAysnSuggest";
+		/** 用户二次登录 */
+		final String USER_LOGIN = "https://kyfw.12306.cn/otn/login/userLogin";
+		
 		/** 刷票链接 */
 		final String OTN_QUERY = "https://kyfw.12306.cn/otn/leftTicket/query?";
 		/** 提交订单 */
@@ -179,7 +188,7 @@ public interface XConstant {
 	 */
 	interface Jpg {
 		/** 12306图标 */
-		final URL JPG_12306_URL = XConstant.class.getResource("../resources/image/12306.jpg");
+		final String JPG_12306_URL = System.getProperty("user.dir").concat("\\src\\main\\resources\\image\\12306.jpg");
 		
 		/** 箭头图标 */
 		final String ARROW = "arrow.png";

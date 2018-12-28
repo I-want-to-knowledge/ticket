@@ -4,7 +4,7 @@ import org.ticket.ticket.page.Login;
 
 /**
  * Hello world!
- *
+ * 启动器
  */
 public class App {
 	public static void main(String[] args) {
