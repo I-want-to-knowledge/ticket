@@ -308,6 +308,40 @@ public interface XConstant {
          * 状态
          */
         String UNICODE_ZT = "\u72B6\u6001";// "状态";
+
+        /*席别*/
+        // String UNICODE_CC = "\u8F66\u6B21";// 车次
+        // String UNICODE_CFD = "\u51FA\u53D1\u5730";// 出发地
+        // String UNICODE_MDD = "\u76EE\u7684\u5730";// 目的地
+        // String UNICODE_FCSJ = "\u53D1\u8F66\u65F6\u95F4";// 发车时间
+        /** 到达时间 */
+        String UNICODE_DDSJ = "\u5230\u8FBE\u65F6\u95F4";// 到达时间
+        /** 商务座 */
+        String UNICODE_SWZ = "\u5546\u52a1\u5ea7";// 商务座
+        /** 特等座 */
+        String UNICODE_TDZ = "\u7279\u7b49\u5ea7";// 特等座
+        /** 一等座 */
+        String UNICODE_YDZ = "\u4e00\u7b49\u5ea7";// 一等座
+        /** 二等座 */
+        String UNICODE_EDZ = "\u4e8c\u7b49\u5ea7";// 二等座
+        /** 高级软卧 */
+        String UNICODE_GJRW = "\u9ad8\u7ea7\u8f6f\u5367";// 高级软卧
+        /** 软卧 */
+        String UNICODE_RW = "\u8F6F\u5367";// 软卧
+        /** 硬卧 */
+        String UNICODE_YW = "\u786C\u5367";// 硬卧
+        /** 软座 */
+        String UNICODE_RZ = "\u8F6F\u5EA7";// 软座
+        /** 硬座 */
+        String UNICODE_YZ = "\u786C\u5EA7";// 硬座
+        /** 无座 */
+        String UNICODE_WZ = "\u65E0\u5EA7";// 无座
+        /** 其它 */
+        String UNICODE_QT = "\u5176\u5B83";// 其它
+        /** 备注 */
+        String UNICODE_BZ = "\u5907\u6CE8";// 备注
+        /** 历时 */
+        String UNICODE_LS = "\u5386\u65F6";// 历时
     }
 
     /**
