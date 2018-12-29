@@ -10,5 +10,5 @@ import org.ticket.ticket.utils.http.method.XHttpMethods;
  * XHttpClient
  */
 public interface XHttpClient {
-	abstract XHttpResponse execute(XHttpMethods methods);
+	XHttpResponse execute(XHttpMethods methods);
 }

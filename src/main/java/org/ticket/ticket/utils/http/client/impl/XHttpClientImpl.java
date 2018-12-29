@@ -1,25 +1,5 @@
 package org.ticket.ticket.utils.http.client.impl;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Map;
-import java.util.StringJoiner;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.ticket.ticket.utils.XConstant;
 import org.ticket.ticket.utils.http.client.XHttpClient;
 import org.ticket.ticket.utils.http.client.XHttpResponse;
@@ -28,8 +8,25 @@ import org.ticket.ticket.utils.http.header.XHeader;
 import org.ticket.ticket.utils.http.method.XHttpMethods;
 import org.ticket.ticket.utils.http.params.XParams;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.util.Map;
+import java.util.StringJoiner;
+
 public class XHttpClientImpl implements XHttpClient {
-	public static CookieManager manager = new CookieManager();
+	static CookieManager manager = new CookieManager();
 	
 	static {
 		CookieHandler.setDefault(manager);
@@ -48,8 +45,8 @@ public class XHttpClientImpl implements XHttpClient {
 			}
 		}
 
-		URL url = null;
-		HttpsURLConnection openConnection = null;
+		URL url;
+		HttpsURLConnection openConnection;
 		try {
 			url = new URL(urlStr);
 			openConnection = (HttpsURLConnection) url.openConnection();
@@ -69,13 +66,7 @@ public class XHttpClientImpl implements XHttpClient {
 				entity.setUrl(openConnection);
 				response.setEntity(entity);
 			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
+		} catch (IOException | KeyManagementException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 		return response;
@@ -87,10 +78,9 @@ public class XHttpClientImpl implements XHttpClient {
 	 * 2018-11-21 20:03:33
 	 * @param openConnection
 	 * @param methods 
-	 * @throws NoSuchAlgorithmException 
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	private void http(HttpsURLConnection openConnection, XHttpMethods methods) throws NoSuchAlgorithmException, IOException {
+	private void http(HttpsURLConnection openConnection, XHttpMethods methods) throws IOException {
 		openConnection.setInstanceFollowRedirects(false);
 		openConnection.setRequestMethod(methods.getType());
 		
@@ -101,7 +91,7 @@ public class XHttpClientImpl implements XHttpClient {
 			openConnection.setDoInput(true);
 			openConnection.setDoOutput(true);
 			OutputStream os = openConnection.getOutputStream();
-			os.write(paramsStr.toString().getBytes(Charset.forName("UTF-8")));
+			os.write(paramsStr.getBytes(Charset.forName("UTF-8")));
 			os.close();
 		}
 	}
@@ -121,8 +111,8 @@ public class XHttpClientImpl implements XHttpClient {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
 		sslContext.init(null, new TrustManager[] {new X509TrustManager() {
 			public X509Certificate[] getAcceptedIssuers() {return null;}
-			public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
-			public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+			public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+			public void checkClientTrusted(X509Certificate[] chain, String authType) {}
 		}}, new SecureRandom());
 		openConnection.setSSLSocketFactory(sslContext.getSocketFactory());
 		
@@ -136,7 +126,7 @@ public class XHttpClientImpl implements XHttpClient {
 			openConnection.setDoOutput(true);
 			
 			OutputStream outputStream = openConnection.getOutputStream();
-			outputStream.write(urlStr.toString().getBytes(Charset.forName("UTF-8")));
+			outputStream.write(urlStr.getBytes(Charset.forName("UTF-8")));
 			outputStream.close();
 		}
 	}

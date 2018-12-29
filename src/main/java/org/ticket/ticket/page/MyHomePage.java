@@ -311,7 +311,7 @@ public class MyHomePage {
 		/*for (String key : map.keySet()) {
 			stationNames.add(key);
 		}*/
-		ComBoTextField.setDestination(departTextField, stationNames, map);
+		ComBoTextField.setUpAutoComplete(departTextField, stationNames, map);
 		departTextField.setColumns(30);
 		departTextField.setColumns(10);
 		

@@ -1,12 +1,12 @@
 package org.ticket.ticket.utils.http.header;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * header内容
@@ -20,11 +20,9 @@ public class XHeader {
 	
 	private Map<String, List<String>> headerMap = new HashMap<>();
 	
-	public Map<String, List<String>> getHeaderMap() {
-		return headerMap;
-	}
+	public Map<String, List<String>> getHeaderMap() { return headerMap;}
 	
-	public void setHeaderMap(Map<String, List<String>> headerMap) {
+	private void setHeaderMap(Map <String, List <String>> headerMap) {
 		this.headerMap = headerMap;
 	}
 	
@@ -52,12 +50,8 @@ public class XHeader {
 	 * @return String[]
 	 */
 	public String[] getKeys() {
-		Set<String> keys = headerMap.keySet();
-		String[] strArray = new String[]{};
-		if (keys != null) {
-			return keys.toArray(strArray);
-		}
-		return strArray;
+		Set <String> keys = headerMap.keySet();
+		return keys.toArray(new String[]{});
 	}
 	
 	/**

@@ -12,11 +12,11 @@ import org.ticket.ticket.utils.http.params.XParams;
  */
 public interface XHttpMethods {
 
-	abstract String getUrl();
+	String getUrl();
 	
-	abstract XHeader getHeader();
+	XHeader getHeader();
 	
-	abstract XParams getParams();
+	XParams getParams();
 	
-	abstract String getType();
+	String getType();
 }

@@ -31,9 +31,7 @@ public class XHttpGet implements XHttpMethods {
 		return header;
 	}
 
-	public void setHeader(XHeader header) {
-		this.header = header;
-	}
+	public void setHeader(XHeader header) {this.header = header;}
 
 	public XParams getParams() {
 		return params;

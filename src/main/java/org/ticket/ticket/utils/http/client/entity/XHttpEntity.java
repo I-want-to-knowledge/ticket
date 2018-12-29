@@ -19,7 +19,7 @@ public class XHttpEntity {
 	private HttpsURLConnection url;// 链接
 
 	public XHttpEntity() {}
-	public XHttpEntity(HttpsURLConnection url) {this.url = url;}
+	// public XHttpEntity(HttpsURLConnection url) {this.url = url;}
 	
 	public void setUrl(HttpsURLConnection url) {
 		this.url = url;

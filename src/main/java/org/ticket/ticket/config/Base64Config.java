@@ -13,8 +13,8 @@ public class Base64Config {
 	
 	private Base64Config() {}
 	
-	static Base64.Encoder encoder = Base64.getEncoder();
-	static Base64.Decoder decoder = Base64.getDecoder();
+	private static Base64.Encoder encoder = Base64.getEncoder();
+	private static Base64.Decoder decoder = Base64.getDecoder();
 	
 	public static void main(String[] args) {
 	}
@@ -26,7 +26,7 @@ public class Base64Config {
 	 * @param b
 	 * @return String
 	 */
-	public static String encoder(byte[] b) {
+	static String encoder(byte[] b) {
 		return encoder.encodeToString(b);
 	}
 	
@@ -37,7 +37,7 @@ public class Base64Config {
 	 * @param str
 	 * @return byte[]
 	 */
-	public static byte[] decoder(String str) {
+	static byte[] decoder(String str) {
 		return decoder.decode(str);
 	}
 }
