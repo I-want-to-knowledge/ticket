@@ -1,55 +1,7 @@
 package org.ticket.ticket.page;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.Vector;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ticket.ticket.page.method.AutoBrushTicketMethod;
@@ -66,8 +18,20 @@ import org.ticket.ticket.utils.other.Chooser;
 import org.ticket.ticket.utils.other.JTextAreaExt;
 import org.ticket.ticket.utils.other.PopUp;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.*;
 
 /**
  * 购票界面
@@ -83,7 +47,6 @@ public class MyHomePage {
 	private JFrame frame;
 	public Map<String, String[]> map = HttpUtils.getCityInfo();
 	public List<JSONObject> trainTypeDatas = new ArrayList<>();
-	public JLabel labelStart;
 	public JTextField departTextField;// 出发地
 	public JTextField dateTextField;
 	public JTextField destinationTextField;
@@ -95,26 +58,25 @@ public class MyHomePage {
 	public JTextAreaExt textArea;
 	public DateFormat HMS_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	public DateFormat YMD_FORMAT = new SimpleDateFormat("yyyy:MM:dd");
-	public JPanel row_panel;
-	public JPanel column_panel;
+	public JPanel row_panel;// 获取行数据
+	public JPanel column_panel;// 获取列数据
 	public JList<Object> passengers;// 乘车人
 	public JList<Object> seatTypes;// 座位类型
-	public JList<Object> checkTicketPattern;// 查票模式
+	private JList<Object> checkTicketPattern;// 查票模式
 	public String purchaseTicketURLParams;// 购票链接参数
 	public int[] seatCodes;// 席别编号
 	public DefaultListModel<Object> trainsModel = new DefaultListModel<>();// 火车车次
 	public Map<String, JSONObject> userInfoMap = new HashMap<>();// 购票人信息，key：用户名
 	public String globalRepeatSubmitToken = "";// 全局重复提交令牌
 	public String keyCheckIsChange = "";// 检查key是否变化
-	public JPanel carTypePanel;// 车型面板
-	public JPanel seatPanel;// 席别面板
-	public JSpinner brushTicketSpinner;// 刷票频率选择框
+	private JPanel carTypePanel;// 车型面板
+	private JPanel seatPanel;// 席别面板
 	public JTable orderTable;// 订单界面-订单列表
-	
-	private int[] mouseLocation = new int[2];// 鼠标的位置
+
+	public int[] mouseLocation = new int[2];// 鼠标的位置
 	
 	/** 开车时间 */
-	public String START_TIME = "start_time";
+	private String START_TIME = "start_time";
 	
 	public void show(MyHomePage mypage) {
 		this.mypage = mypage;
@@ -315,7 +277,6 @@ public class MyHomePage {
 					if (isRun) {
 						printLog("请先停止刷票");
 						brushTicketCheckBox.setSelected(true);
-						return;
 					} else {
 						queryTicketButton.setText("手动刷票");
 						ticketType = 0;
@@ -336,7 +297,7 @@ public class MyHomePage {
 	 */
 	private void basicInfo() {
 		// 出发地
-		labelStart = new JLabel("出发地");
+		JLabel labelStart = new JLabel("出发地");
 		labelStart.setBounds(43, 52, 55, 18);
 		// 输入框信息
 		// 拓展：ComBoTextField 带下拉功能的text field
@@ -346,10 +307,10 @@ public class MyHomePage {
 		departTextField.setLocation(104, 51);
 		departTextField.setSize(90, 23);
 		// 获取位置名
-		List<String> stationNames = new ArrayList<>();
-		for (String key : map.keySet()) {
+		List<String> stationNames = new ArrayList<>(map.keySet());
+		/*for (String key : map.keySet()) {
 			stationNames.add(key);
-		}
+		}*/
 		ComBoTextField.setDestination(departTextField, stationNames, map);
 		departTextField.setColumns(30);
 		departTextField.setColumns(10);
@@ -380,27 +341,23 @@ public class MyHomePage {
 		
 		JComboBox<Object> comboBox = new JComboBox<>();
 		comboBox.setBounds(600, 53, 105, 21);
-		comboBox.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.setRowCount(0);
-				
-				// 解析选择的时间范围
-				String[] timeArr = comboBox.getSelectedItem().toString().split(XConstant.Symbol.LINK_);
-				// 没有时间区间，搜索全天
-				if (timeArr == null || timeArr.length != 2) {
-					timeArr = new String[] {"00:00", "24:00"};
-				}
-				
-				// 所有车型的数据
-				for (JSONObject json : trainTypeDatas) {
-					String departTime = json.getString(START_TIME);
-					if (departTime.compareTo(timeArr[0]) >= 0
-							&& departTime.compareTo(timeArr[1]) < 0) {
-						addRow(new String[]{}, json);
-					}
+		comboBox.addActionListener(e -> {
+			DefaultTableModel model = (DefaultTableModel) table.getModel();
+			model.setRowCount(0);
+
+			// 解析选择的时间范围
+			String[] timeArr = Objects.requireNonNull(comboBox.getSelectedItem()).toString().split(XConstant.Symbol.LINK_);
+			// 没有时间区间，搜索全天
+			if (timeArr.length != 2) {
+				timeArr = new String[] {"00:00", "24:00"};
+			}
+
+			// 所有车型的数据
+			for (JSONObject json : trainTypeDatas) {
+				String departTime = json.getString(START_TIME);
+				if (departTime.compareTo(timeArr[0]) >= 0
+						&& departTime.compareTo(timeArr[1]) < 0) {
+					addRow(new String[]{}, json);
 				}
 			}
 		});
@@ -794,7 +751,7 @@ public class MyHomePage {
 	 * @param trainsAllCheckBox ‘全部车次’选择框
 	 * @param train 车型首字母
 	 */
-	protected void trainNumSelected(JCheckBox checkBox, JPanel carTypePanel, JCheckBox trainsAllCheckBox, String train) {
+	private void trainNumSelected(JCheckBox checkBox, JPanel carTypePanel, JCheckBox trainsAllCheckBox, String train) {
 		// 查看该车型是否选中
 		if (checkBox.isSelected()) {
 			// 选中时
@@ -884,7 +841,7 @@ public class MyHomePage {
 	private void orderPane(JTabbedPane tabbedPane) {
 		JPanel orderPanel = new JPanel();
 		orderPanel.setLayout(null);
-		tabbedPane.add(orderPanel, "订单界面");
+		tabbedPane.add(orderPanel, XConstant.PanelString.PANEL_DDJM);
 		
 		JButton brushOrderButton = new JButton("刷新订单列表");
 		brushOrderButton.addMouseListener(new MouseAdapter() {
@@ -984,7 +941,7 @@ public class MyHomePage {
 	private void brushTicketPane(JTabbedPane tabbedPane) {
 		// 刷票界面
 		JPanel brushTicketPanel = new JPanel();
-		tabbedPane.add(brushTicketPanel, "刷票界面");
+		tabbedPane.add(brushTicketPanel, XConstant.PanelString.PANEL_SPJM);
 		
 		tabbedPane.setBounds(43, 411, 1001, 242);
 		brushTicketPanel.setLayout(null);
@@ -1020,7 +977,7 @@ public class MyHomePage {
 		ridePanel.add(brushTicketHz);
 		
 		// 刷票频率选择框
-		brushTicketSpinner = new JSpinner();
+		JSpinner brushTicketSpinner = new JSpinner();
 		brushTicketSpinner.setBounds(91, 29, 78, 22);
 		brushTicketSpinner.setModel(new SpinnerNumberModel(1000, 0, null, 100));
 		ridePanel.add(brushTicketSpinner);
@@ -1198,7 +1155,7 @@ public class MyHomePage {
 	 *
 	 * 2018-12-13 11:30:23 void
 	 */
-	public void checkBrushTicketInfo() {
+	private void checkBrushTicketInfo() {
 		// 检查标识
 		boolean check = true;
 		
@@ -1269,7 +1226,7 @@ public class MyHomePage {
 	 * 2018-12-13 15:42:54
 	 * @return int[]
 	 */
-	public int[] autoSeatCodeInfo() {
+	private int[] autoSeatCodeInfo() {
 		// 席别
 		ListModel<Object> model = seatTypes.getModel();
 		int size = model.getSize();// 席别个数
@@ -1356,7 +1313,7 @@ public class MyHomePage {
 	 *
 	 * 2018-12-12 17:07:33 void
 	 */
-	public void checkAllColumnRow() {
+	private void checkAllColumnRow() {
 		// row
 		Component[] rows = row_panel.getComponents();
 		for (Component row : rows) {
@@ -1462,8 +1419,8 @@ public class MyHomePage {
 	 * 添加车次（每行）
 	 *
 	 * 2018-12-12 14:06:36
-	 * @param rows
-	 * @param jsonObj void
+	 * @param rows 多行
+	 * @param jsonObj 添加车次数据
 	 */
 	public void addRow(String[] rows, JSONObject jsonObj) {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();

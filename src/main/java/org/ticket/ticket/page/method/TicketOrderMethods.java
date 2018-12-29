@@ -39,7 +39,7 @@ public class TicketOrderMethods extends Thread {
 			this.mypage = mypage;
 	}
 
-	public TicketOrderMethods(MyHomePage mypage, JSONObject data) {
+	TicketOrderMethods(MyHomePage mypage, JSONObject data) {
 		if (this.mypage == null)
 			this.mypage = mypage;
 
@@ -126,8 +126,8 @@ public class TicketOrderMethods extends Thread {
 		String body = XHttpUtils.outHtml(resp.getBody());
 		
 		// 解析返回值（html）中的某个值
-		Pattern tokenCompile = Pattern.compile("var globalRepeatSubmitToken = '[0-9 | a-z]{32}");
-		Pattern keyCompile = Pattern.compile("'key_check_isChange':'[0-9 | A-Z]{56}");
+		Pattern tokenCompile = Pattern.compile("var globalRepeatSubmitToken = '[0-9|a-z]{32}");
+		Pattern keyCompile = Pattern.compile("'key_check_isChange':'[0-9|A-Z]{56}");
 		Matcher tokenMatcher = tokenCompile.matcher(body);
 		Matcher keyMatcher = keyCompile.matcher(body);
 		while (tokenMatcher.find()) {
@@ -148,7 +148,7 @@ public class TicketOrderMethods extends Thread {
 	 *
 	 * 2018-12-17 13:30:05 void
 	 */
-	public void getVerificationCode() {
+	private void getVerificationCode() {
 		this.verificationCode = "";
 		XHttpResponse resp = XBrowser.execute(new XHttpGet(XConstant.Url.PASS_CODE_NEW + Math.random()));// 获取验证码
 		HttpUtils.submitVerificationCode(resp.getBody(), this);
@@ -159,7 +159,7 @@ public class TicketOrderMethods extends Thread {
 	 * 检查验证码是否正确
 	 *
 	 * 2018-12-17 15:59:33
-	 * @param string void
+	 * @param verificationCode 验证码
 	 */
 	public void checkVerificationCode(String verificationCode) {
 		this.verificationCode = verificationCode;

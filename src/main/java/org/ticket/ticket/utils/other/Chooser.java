@@ -52,7 +52,7 @@ import org.apache.http.client.utils.DateUtils;
  */
 public class Chooser extends JPanel {
 	private static final long serialVersionUID = 1L;
-	
+
 	private SimpleDateFormat sdf;
 	private Calendar calendar;
 	private Calendar now = Calendar.getInstance();
@@ -74,7 +74,7 @@ public class Chooser extends JPanel {
 	public static Chooser getInstance(Date date, String format) {
 		return new Chooser(date, format, defaultStartDAY);
 	}
-	
+
 	public static Chooser getInstance(Date date) {
 		return getInstance(date, DEFAULT_FORMAT);
 	}
@@ -82,7 +82,7 @@ public class Chooser extends JPanel {
 	public static Chooser getInstance(String format) {
 		return getInstance(new Date(), format);
 	}
-	
+
 	public static Chooser getInstance() {
 		return getInstance(new Date(), DEFAULT_FORMAT);
 	}

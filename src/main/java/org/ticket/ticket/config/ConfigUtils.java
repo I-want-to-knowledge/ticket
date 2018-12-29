@@ -2,6 +2,7 @@ package org.ticket.ticket.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ import org.xml.sax.SAXException;
 public class ConfigUtils {
 
 	public Map<String, String> map;
-	public static ConfigUtils configUtils;
+	private static ConfigUtils configUtils;
 	private File file;
 
 	/**
@@ -39,7 +40,7 @@ public class ConfigUtils {
 	 * 2018-11-22 14:09:25
 	 * 
 	 * @return ConfigUtils
-	 * @throws Exception
+	 * @throws Exception 异常
 	 */
 	public synchronized static ConfigUtils getInstance() throws Exception {
 		if (configUtils == null) {
@@ -50,8 +51,8 @@ public class ConfigUtils {
 
 	private ConfigUtils() throws ParserConfigurationException, SAXException, IOException {
 		map = new HashMap<>();
-		// 解析xml
-		file = new File(this.getClass().getResource("/").getPath()+"xconf.xml");
+		// 解析xml，解析不了%20直接替换成空格
+		file = new File(this.getClass().getResource("/").getPath().concat("xconf.xml").replaceAll("%20", " "));
 		NodeList nodeList = parseXml().getElementsByTagName(XConstant.User.VALUE);
 		if (nodeList == null || nodeList.getLength() <= 0) {
 			return;
@@ -62,8 +63,8 @@ public class ConfigUtils {
 			String[] strArray = textContent.split("\\|");
 
 			// 页面展示
-			map.put(new String(Base64Config.decoder(strArray[0]), "utf-8"),
-					new String(Base64Config.decoder(strArray[1]), "utf-8"));
+			map.put(new String(Base64Config.decoder(strArray[0]), StandardCharsets.UTF_8),
+					new String(Base64Config.decoder(strArray[1]), StandardCharsets.UTF_8));
 		}
 	}
 
@@ -71,10 +72,9 @@ public class ConfigUtils {
 	 * xml解析
 	 *
 	 * 2018-11-22 19:37:51
-	 * @param file2
 	 * @return 解析结果
-	 * @throws SAXException
-	 * @throws IOException
+	 * @throws SAXException 异常
+	 * @throws IOException 异常
 	 * @throws ParserConfigurationException Document
 	 */
 	private Document parseXml() throws SAXException, IOException, ParserConfigurationException {
@@ -85,12 +85,12 @@ public class ConfigUtils {
 	 * 记住用户
 	 *
 	 * 2018-11-22 19:34:25
-	 * @param users void
-	 * @throws ParserConfigurationException 
-	 * @throws IOException 
-	 * @throws SAXException 
-	 * @throws TransformerFactoryConfigurationError 
-	 * @throws TransformerException 
+	 * @param users 用户
+	 * @throws ParserConfigurationException 异常
+	 * @throws IOException 异常
+	 * @throws SAXException 异常
+	 * @throws TransformerFactoryConfigurationError 异常
+	 * @throws TransformerException 异常
 	 */
 	public void rememberUser(String[] users) throws SAXException, IOException, ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {
 		// 信息不能为空
@@ -133,11 +133,11 @@ public class ConfigUtils {
 	 *
 	 * 2018-11-26 19:35:30
 	 * @param username 要删除的用户名
-	 * @throws SAXException
-	 * @throws IOException
-	 * @throws ParserConfigurationException
-	 * @throws TransformerFactoryConfigurationError
-	 * @throws TransformerException void
+	 * @throws SAXException 异常
+	 * @throws IOException 异常
+	 * @throws ParserConfigurationException 异常
+	 * @throws TransformerFactoryConfigurationError 异常
+	 * @throws TransformerException 异常
 	 */
 	public void removeUser(String username) throws SAXException, IOException, ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {
 		// 信息不能为空
@@ -175,9 +175,9 @@ public class ConfigUtils {
 	 * 写入数据
 	 *
 	 * 2018-11-22 20:18:41 void
-	 * @param doc 
-	 * @throws TransformerFactoryConfigurationError 
-	 * @throws TransformerException 
+	 * @param doc 键值对
+	 * @throws TransformerFactoryConfigurationError 异常
+	 * @throws TransformerException 异常
 	 */
 	private void writeLocal(Document doc) throws TransformerFactoryConfigurationError, TransformerException {
 		Transformer tf = TransformerFactory.newInstance().newTransformer();

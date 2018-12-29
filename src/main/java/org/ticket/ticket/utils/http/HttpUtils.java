@@ -152,8 +152,8 @@ public class HttpUtils {
 	 * 验证码（提交订单）
 	 *
 	 * 2018-12-17 13:54:19
-	 * @param body
-	 * @param ticketOrderMethods void
+	 * @param body 页面返回body
+	 * @param ticketOrderMethods 票订单方法
 	 */
 	public static void submitVerificationCode(InputStream body, TicketOrderMethods ticketOrderMethods) {
 		byte[] b = new byte[]{};
@@ -193,7 +193,7 @@ public class HttpUtils {
 						public void mouseClicked(MouseEvent e) {
 							verificationPane.remove(imageLabel);
 							verificationPane.repaint();
-						};
+						}
 					});
 					verificationPane.add(imageLabel, -3);// 将label放置在面板之下
 					imageLabel.setSize(image12306.getIconWidth(), image12306.getIconHeight());
@@ -316,8 +316,8 @@ public class HttpUtils {
 	 * 获取余票数量
 	 *
 	 * 2018-12-18 10:23:50
-	 * @param string
-	 * @param substring
+	 * @param ticket 票
+	 * @param seatNum 座位号
 	 * @return int
 	 */
 	public static int getRemainingTicket(String ticket, String seatNum) {
@@ -326,10 +326,10 @@ public class HttpUtils {
 		// int seat_2 = -1;
 		int i = 0;
 		while (i < ticket.length()) {
-			String s = ticket.substring(i, 10);
+			String s = ticket.substring(i, i + 10);
 			String c_seat = s.substring(0, 1);
-			if (c_seat == seatNum) {
-				String count = s.substring(6, 4);
+			if (c_seat.equals(seatNum)) {
+				String count = s.substring(6, 10);
 				if (count.length() > 0) {
 					int c = Integer.parseInt(count);
 					if (c < 3000) {
@@ -366,7 +366,7 @@ public class HttpUtils {
 	 * 座位编号转座位类型
 	 *
 	 * 2018-12-18 13:57:11
-	 * @param substring
+	 * @param seatNum 座位号
 	 * @return String
 	 */
 	public static String seatNumToSeatType(String seatNum) {

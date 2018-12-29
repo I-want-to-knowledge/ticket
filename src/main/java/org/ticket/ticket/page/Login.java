@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class Login {
 		});
 	}
 
-	public Login() {
+	private Login() {
 		XBrowser.getInstance();
 		initialize();
 	}
@@ -106,7 +107,7 @@ public class Login {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					LOG.info("图片路径：{}", XConstant.Jpg.JPG_12306_URL);
+					// LOG.info("图片路径：{}", XConstant.Jpg.JPG_12306_URL);
 					ImageIcon imageIcon = new ImageIcon(XConstant.Jpg.JPG_12306_URL);
 					final JLabel jLabel = new JLabel(imageIcon);
 					jLabel.addMouseListener(new MouseAdapter() {
@@ -115,7 +116,7 @@ public class Login {
 							layeredPane.remove(jLabel);
 							// 重绘该组件
 							layeredPane.repaint();
-						};
+						}
 					});
 					// 将按钮放置在面板之下
 					layeredPane.add(jLabel, -3);
@@ -174,25 +175,24 @@ public class Login {
 		
 		// 登录
 		JButton loginButton = new JButton("登录");
-		loginButton.addActionListener(e -> {
-			loginMethods.checkVerificationCode();
-		});
+		loginButton.addActionListener(e -> loginMethods.checkVerificationCode());
 		loginButton.setBounds(61, 366, 303, 51);
 		frame.getContentPane().add(loginButton);
 		
 		// 记住用户
-		List<String> arrayList = new ArrayList<>();
-		Map<String, String> map = null;
+		Map<String, String> map = new HashMap <>();
 		try {
 			map = ConfigUtils.getInstance().map;
 		} catch (Exception e) {
 			hintLabel.setText("记住用户处理错误(" + e.getMessage() + ")");
 			hintLabel.setForeground(Color.red);
 			LOG.error("记住用户处理错误，错误信息：{}", e);
+			// return;
 		}
-		for (String key : map.keySet()) {
+		List <String> arrayList = new ArrayList <>(map.keySet());
+		/*for (String key : map.keySet()) {
 			arrayList.add(key);
-		}
+		}*/
 		
 		// 按键自动完成
 		ComBoTextField.setUpAutoComplete(jTextField, pwdField, arrayList);
