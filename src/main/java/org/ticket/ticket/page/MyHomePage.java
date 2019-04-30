@@ -58,8 +58,8 @@ public class MyHomePage {
 	public JTextAreaExt textArea;
 	public DateFormat HMS_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	public DateFormat YMD_FORMAT = new SimpleDateFormat("yyyy:MM:dd");
-	public JPanel row_panel;// 获取行数据
-	public JPanel column_panel;// 获取列数据
+	private JPanel row_panel;// 获取行数据
+	private JPanel column_panel;// 获取列数据
 	public JList<Object> passengers;// 乘车人
 	public JList<Object> seatTypes;// 座位类型
 	private JList<Object> checkTicketPattern;// 查票模式
@@ -73,7 +73,7 @@ public class MyHomePage {
 	private JPanel seatPanel;// 席别面板
 	public JTable orderTable;// 订单界面-订单列表
 
-	public int[] mouseLocation = new int[2];// 鼠标的位置
+	private int[] mouseLocation = new int[2];// 鼠标的位置
 	
 	/** 开车时间 */
 	private String START_TIME = "start_time";
@@ -241,7 +241,7 @@ public class MyHomePage {
 	}
 	
 	/**
-	 * 查刷票选择
+	 * 查、刷票选择
 	 *
 	 * 2018-12-26 11:39:20 void
 	 */
@@ -436,20 +436,32 @@ public class MyHomePage {
 						JCheckBox checkBox = ((JCheckBox) c);
 						// 全部席别选中，则所有席别选中，否则...
 						checkBox.setSelected(allCheckBox.isSelected());
-						
+
 						// 列表中展示该席别的信息
 						if (!XConstant.SeatType.SEAT_ALL.equals(checkBox.getText())) {
 							// 列表中的总列数
 							int columnCount = table.getColumnModel().getColumnCount();
-							// 改 Check Box 在几列
-							int columnNum = 0;
 							for (int i = 0; i < columnCount; i++) {
-								if (checkBox.getText().equals(table.getColumnModel().getColumn(i).getHeaderValue())) {
-									columnNum = i;
+								// 获取表的指定列
+								TableColumn column = table.getColumnModel().getColumn(i);
+								// 修改该选择框的信息
+								if (checkBox.getText().equals(column.getHeaderValue())) {
+									int width = checkBox.getWidth();// 宽
+									// 选中时
+									if (checkBox.isSelected()) {
+										// 列宽
+										column.setMinWidth(width);
+										column.setMaxWidth(width);
+										column.setPreferredWidth(width);
+									} else {
+										// 列宽
+										column.setMinWidth(0);
+										column.setMaxWidth(0);
+										column.setPreferredWidth(0);
+									}
 									break;
 								}
 							}
-							seatTypeSelected(checkBox, columnNum, checkBox.getWidth(), seatPanel, allCheckBox);
 						}
 					}
 				}

@@ -96,7 +96,7 @@ public class AutoBrushTicketMethod extends Thread {
 		boolean brush = true;
 		for (Object object : result) {
 			String[] tickets = object.toString().split("\\|");
-			if (tickets == null || tickets.length <= 0) {
+			if (tickets.length <= 0) {
 				continue;
 			}
 
